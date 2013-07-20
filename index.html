@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<meta charset="utf-8">
+<title>Recife Travel Planner</title>
+<LINK href="stylesheet/open_close.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="style/headers.css">
+<link rel="stylesheet" href="style/buttons.css">
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+<style>
+body {
+	width:310px;
+	height: 480px;
+	overflow: hidden;
+	background-color:#dfe3ee;
+}
+
+p {
+	font-size: 12px;
+	padding:5px 5px 10px 5px;
+}
+</style>
+
+</head>
+
+<script>
+$(document).ready(function() {
+	
+	$.checkSetence = function(setence, campo_filtro){
+		campo_filtro = campo_filtro.toUpperCase();
+		return setence.contains(campo_filtro);
+    }
+
+	$("#pesquisar").click(function(){
+		$("#resultado").empty();
+		
+		var url = "geo.geojson";
+		
+		// Não está funcionando
+		//var url = "http://dados.recife.pe.gov.br/storage/f/2013-07-15T05:38:32.826Z/parquespracas.geojson";
+		
+		$.getJSON(url,
+		function(data){
+			features = data.features;
+			$.each(features, function(i, field){
+				var bairro = field.properties.NOMEBAIRR;
+				var endereco = field.properties.ED;
+				
+				var local = field.properties.CDTIPO;
+				
+				if (field.properties.NMNOME != null) {
+					local = local + " " + field.properties.NMNOME;
+				} else {
+					local = local + " ( " + endereco + " )"; 
+				}
+				
+				if($("#campo").val() != "" && !$.checkSetence(local, $("#campo").val())){
+					return;
+				}
+				
+				var coord = field.geometry.coordinates[0][0]				
+				var url_popup = "map.html?bairro=" + bairro + "&ed=" + endereco + "&local=" + local + "&x=" + coord[1] + "&y=" + coord[0];
+				
+				
+				var see = $("<button class='css3button' >Ver Local</button>");
+				var paragraph = $("<p/>");
+				
+				see.click(function() {
+					window.open(url_popup,'',"width=320px,height=480px,directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no");
+				});
+				paragraph.append(local);
+				paragraph.append("<br/>");
+				paragraph.append(see);
+				paragraph.append("<hr/>");
+				paragraph.appendTo("#resultado");
+			});
+		})
+		.fail(function(result) {
+			$("#resultado").append("RESULTADO: " + result.statusText);
+		} )
+	  
+	});
+});
+</script>
+
+<body>
+	<section role="region">
+	  <header>
+		<h1>Recife Travel Planner</h1>
+	  </header>
+	</section>
+	<section role="region">
+	  <header>
+		<menu type="toolbar">
+		  <button id="pesquisar" ><span class="icon icon-send">user</span></button>
+		</menu>
+		<form action="#">
+		  <input type="text" id="campo" placeholder="Pesquisar" required="required">
+		</form>
+	  </header>
+	</section>
+	<hr/>
+	<div id="resultado" style="width: 310px; height: 400px; overflow-y: scroll;" >
+	<p style="font-size:18px;" >Pesquise os pontos turisticos da cidade do Recife e agende uma visita através do Google Calendar</p>
+	</div>
+</body>
+</html>

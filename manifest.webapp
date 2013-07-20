@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "name": "Recife Planner",
+  "launch_path": "index.html",
+  "description": "Sistema de planejamento de viagens do Recife",
+  "icons": {
+    "16": "/icons/16.png",
+    "32": "/icons/32.png",
+    "48": "/icons/48.png",
+    "64": "/icons/64.png",
+    "128": "/icons/128.png"
+  },
+  "developer": {
+    "name": "Celso Agra"
+  },
+  "installs_allowed_from": ["*"],
+  "default_locale": "en"
+}

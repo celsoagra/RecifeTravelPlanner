@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Recife Travel Planner</title>
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://cdn.leafletjs.com/leaflet-0.6.3/leaflet.js"></script>
+<script src="http://urldecoderonline.com/js/jquery.urldecoder.js"></script>
+
+<LINK href="stylesheet/open_close.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="style/headers.css">
+<link href="style_unstable/toolbars.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.3/leaflet.css" />
+
+<style>
+body {
+	width:320px;
+	height: 480px;
+	overflow: hidden;
+	background-color:#dfe3ee;
+}
+
+#map { height: 250px; }
+
+p {
+	font-size: 12px;
+	padding:0px 5px;
+	margin: 5px;
+}
+</style>
+
+</head>
+<script>
+$(document).ready(function() {
+	
+	$.urlParam = function(name){
+		var loc = $.url.decode(window.location.href);
+		var results = new RegExp('[\\?&amp;]' + name + '=([^&amp;#]*)').exec(loc);
+		var resultado = results[1] || "";
+		
+		return resultado;
+	}
+	
+	$.addResultado = function(name, value){
+		if(value != null){
+			var p_result = $("<p/>");
+			p_result.append(name + ": " + value);
+			p_result.appendTo("#resultado");
+		}
+		
+	}
+	
+	var x = $.urlParam('x');
+	var y = $.urlParam('y');
+
+	var map = L.map('map').setView([x, y], 15);
+	
+	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+			maxZoom: 18
+		}).addTo(map);
+	
+	var marker = L.marker([x, y]).addTo(map);
+	marker.bindPopup("<b>" + $.urlParam('local') + "</b>").openPopup();
+	
+	$.addResultado("LOCAL", $.urlParam('local'));
+	$.addResultado("BAIRRO", $.urlParam('bairro'));
+	$.addResultado("ENDEREÇO", $.urlParam('ed'));
+	
+	/* ADICIONANDO EVENTO */
+	var add_event = $("<a/>");
+	add_event.attr('href', 'http://www.google.com/calendar/event?action=TEMPLATE&text=' + $.urlParam('local') +	'&location='
+	+ x + ',' + y +'&details=' +
+	'visita%20ao%20local%20' + $.urlParam('local') + '%2E&trp=false&sprop=Recife%20Travel%20Planner&sprop=name:');
+	add_event.attr('target', '_self');
+	
+	var event_image = $("<img/>");
+	event_image.attr('height', '40px');
+	event_image.attr('alt', 'Add Event');
+	event_image.attr('align', 'right');
+	event_image.attr('src', 'http://www.gettyicons.com/free-icons/103/pretty-office-2/png/256/add_event_256.png');
+	event_image.appendTo(add_event);
+	
+	
+	var p_evento = $("<p/>");
+	p_evento.append("<h2 style='color:white; float:left; ' >Adicionar ao Google Calendar: </h2>");
+	add_event.appendTo(p_evento);
+	p_evento.appendTo("#google");
+});
+</script>
+
+<body>
+	<section role="region">
+	  <header>
+		<h1>Recife Travel Planner</h1>
+	  </header>
+	</section>
+	<div id="resultado" ></div>
+	<div id="map"></div>
+	
+	
+	
+	
+	<div id="google" role="toolbar" />
+  
+  
+</body>
+</html>
